@@ -921,6 +921,7 @@ MonoBehaviour:
   sensX: 400
   sensY: 400
   orientation: {fileID: 1008823611}
+  camHolder: {fileID: 1927699616}
 --- !u!1 &1008823610
 GameObject:
   m_ObjectHideFlags: 0
@@ -1647,12 +1648,19 @@ MonoBehaviour:
     m_Bits: 64
   wallRunForce: 200
   maxWallRunTime: 1.5
+  wallJumpUpForce: 7
+  wallJumpSideForce: 12
   climbSpeed: 3
   wallCheckDistance: 0.7
   minJumpHeight: 2
   orientation: {fileID: 1008823611}
+  fpsCam: {fileID: 963194229}
+  exitWallTime: 0.2
+  useGravity: 1
+  gravityCounterForce: 5.05
   upwards: 304
   downwards: 99
+  jump: 32
 --- !u!1 &1875019932
 GameObject:
   m_ObjectHideFlags: 0

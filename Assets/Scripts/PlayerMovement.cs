@@ -139,7 +139,11 @@ public class PlayerMovement : MonoBehaviour
             state = MovementState.airborne;
         }
 
-        // check if desiredMoveSpeed has changed drastically
+        if (!wallrunning)
+        {
+            rb.useGravity = !OnSlope();
+        }
+        
         if (Mathf.Abs(desiredMoveSpeed - lastDesiredMoveSpeed) > defaultSprintDiff && moveSpeed != 0)
         {
             StopAllCoroutines();
