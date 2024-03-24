@@ -13,7 +13,9 @@ public class PlayerMovement : MonoBehaviour
     public float walkSpeed;
     public float sprintSpeed;
     public float slideSpeed;
+    public float wallRunSpeed;
     private float moveSpeed;
+
 
     //for momentum calc
     private float desiredMoveSpeed;
@@ -50,12 +52,15 @@ public class PlayerMovement : MonoBehaviour
 
     private float defaultSprintDiff;
 
+    public bool wallrunning;
+
     public enum MovementState
     {
         walking,
         sprinting,
         airborne,
-        sliding
+        sliding,
+        wallrunning
     }
 
 
@@ -85,7 +90,6 @@ public class PlayerMovement : MonoBehaviour
             rb.drag = 0;
         }
 
-        Debug.Log(rb.velocity.magnitude);
     }
 
     private void FixedUpdate()
@@ -93,9 +97,64 @@ public class PlayerMovement : MonoBehaviour
         MovePlayer();
     }
 
+    private void StateHandler()
+    {
+
+        //Mode - Wallrunning
+        if (wallrunning)
+        {
+            state = MovementState.wallrunning;
+            desiredMoveSpeed = wallRunSpeed;
+        }
+
+        // Mode - Sliding
+        if (sliding)
+        {
+            state = MovementState.sliding;
+
+            if (OnSlope() && rb.velocity.y < 0.1f)
+                desiredMoveSpeed = slideSpeed;
+
+            else
+                desiredMoveSpeed = sprintSpeed;
+        }
+
+        // Mode - Sprinting
+        else if (grounded && Input.GetKey(sprintKey))
+        {
+            state = MovementState.sprinting;
+            desiredMoveSpeed = sprintSpeed;
+        }
+
+        // Mode - Walking
+        else if (grounded)
+        {
+            state = MovementState.walking;
+            desiredMoveSpeed = walkSpeed;
+        }
+
+        // Mode - Air
+        else
+        {
+            state = MovementState.airborne;
+        }
+
+        // check if desiredMoveSpeed has changed drastically
+        if (Mathf.Abs(desiredMoveSpeed - lastDesiredMoveSpeed) > defaultSprintDiff && moveSpeed != 0)
+        {
+            StopAllCoroutines();
+            StartCoroutine(SmoothLerpMoveSpeed());
+        }
+        else
+        {
+            moveSpeed = desiredMoveSpeed;
+        }
+
+        lastDesiredMoveSpeed = desiredMoveSpeed;
+    }
+
     private IEnumerator SmoothLerpMoveSpeed()
     {
-        Debug.Log("SmoothLerpMoveSpeed");
         float time = 0;
         float difference = Mathf.Abs(desiredMoveSpeed - moveSpeed);
         float startValue = moveSpeed;
@@ -200,54 +259,6 @@ public class PlayerMovement : MonoBehaviour
     private void ResetJump()
     {
         readyToJump = true;
-    }
-
-    private void StateHandler()
-    {
-        // Mode - Sliding
-        if (sliding)
-        {
-            state = MovementState.sliding;
-
-            if (OnSlope() && rb.velocity.y < 0.1f)
-                desiredMoveSpeed = slideSpeed;
-
-            else
-                desiredMoveSpeed = sprintSpeed;
-        }
-
-        // Mode - Sprinting
-        else if (grounded && Input.GetKey(sprintKey))
-        {
-            state = MovementState.sprinting;
-            desiredMoveSpeed = sprintSpeed;
-        }
-
-        // Mode - Walking
-        else if (grounded)
-        {
-            state = MovementState.walking;
-            desiredMoveSpeed = walkSpeed;
-        }
-
-        // Mode - Air
-        else
-        {
-            state = MovementState.airborne;
-        }
-
-        // check if desiredMoveSpeed has changed drastically
-        if (Mathf.Abs(desiredMoveSpeed - lastDesiredMoveSpeed) > defaultSprintDiff && moveSpeed != 0)
-        {
-            StopAllCoroutines();
-            StartCoroutine(SmoothLerpMoveSpeed());
-        }
-        else
-        {
-            moveSpeed = desiredMoveSpeed;
-        }
-
-        lastDesiredMoveSpeed = desiredMoveSpeed;
     }
 
 
