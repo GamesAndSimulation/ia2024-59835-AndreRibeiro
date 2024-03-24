@@ -1,9 +1,7 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UIElements;
 
-public class NewBehaviourScript : MonoBehaviour
+public class PlayerMovement : MonoBehaviour
 {
     public Transform orientation;
 
@@ -14,7 +12,15 @@ public class NewBehaviourScript : MonoBehaviour
     [Header("Movement")]
     public float walkSpeed;
     public float sprintSpeed;
+    public float slideSpeed;
     private float moveSpeed;
+
+    //for momentum calc
+    private float desiredMoveSpeed;
+    private float lastDesiredMoveSpeed;
+
+    public float speedIncreaseMultiplier;
+    public float slopeIncreaseMultiplier;
 
     public float groundDrag;
     public float jumpForce;
@@ -40,11 +46,16 @@ public class NewBehaviourScript : MonoBehaviour
 
     public MovementState state;
 
+    public bool sliding;
+
+    private float defaultSprintDiff;
+
     public enum MovementState
     {
         walking,
         sprinting,
-        airborne
+        airborne,
+        sliding
     }
 
 
@@ -54,6 +65,7 @@ public class NewBehaviourScript : MonoBehaviour
         rb = GetComponent<Rigidbody>();
         rb.freezeRotation = true;
         readyToJump = true;
+        defaultSprintDiff = Mathf.Abs(sprintSpeed - walkSpeed);
     }
 
     // Update is called once per frame
@@ -73,13 +85,40 @@ public class NewBehaviourScript : MonoBehaviour
             rb.drag = 0;
         }
 
-        Debug.Log(OnSlope());
-
+        Debug.Log(rb.velocity.magnitude);
     }
 
     private void FixedUpdate()
     {
         MovePlayer();
+    }
+
+    private IEnumerator SmoothLerpMoveSpeed()
+    {
+        Debug.Log("SmoothLerpMoveSpeed");
+        float time = 0;
+        float difference = Mathf.Abs(desiredMoveSpeed - moveSpeed);
+        float startValue = moveSpeed;
+
+        while(time < difference)
+        {
+            moveSpeed = Mathf.Lerp(startValue, desiredMoveSpeed, time / difference);
+
+            if (OnSlope())
+            {
+                float slopeAngle = Vector3.Angle(Vector3.up, slopeHit.normal);
+                float slopeAngleIncrease = 1 + (slopeAngle/ 90f);
+                time += Time.deltaTime * speedIncreaseMultiplier * slopeIncreaseMultiplier * slopeAngleIncrease;
+            }
+            else
+            {
+                time += Time.deltaTime * speedIncreaseMultiplier;
+            }
+
+            yield return null;
+        }
+
+        moveSpeed = desiredMoveSpeed;
     }
 
     private void MyInput()
@@ -102,7 +141,7 @@ public class NewBehaviourScript : MonoBehaviour
 
         if(OnSlope())
         {
-            rb.AddForce(GetSlopeMoveDirection() * moveSpeed * 20f, ForceMode.Force);
+            rb.AddForce(GetSlopeMoveDirection(moveDirection) * moveSpeed * 20f, ForceMode.Force);
 
             if(rb.velocity.y > 0)
             {
@@ -165,27 +204,54 @@ public class NewBehaviourScript : MonoBehaviour
 
     private void StateHandler()
     {
-        if(grounded)
+        // Mode - Sliding
+        if (sliding)
         {
-            if (Input.GetKey(sprintKey))
-            {
-                state = MovementState.sprinting;
-                moveSpeed = sprintSpeed;
-            }
+            state = MovementState.sliding;
+
+            if (OnSlope() && rb.velocity.y < 0.1f)
+                desiredMoveSpeed = slideSpeed;
+
             else
-            {
-                state = MovementState.walking;
-                moveSpeed = walkSpeed;
-            }
+                desiredMoveSpeed = sprintSpeed;
         }
+
+        // Mode - Sprinting
+        else if (grounded && Input.GetKey(sprintKey))
+        {
+            state = MovementState.sprinting;
+            desiredMoveSpeed = sprintSpeed;
+        }
+
+        // Mode - Walking
+        else if (grounded)
+        {
+            state = MovementState.walking;
+            desiredMoveSpeed = walkSpeed;
+        }
+
+        // Mode - Air
         else
         {
             state = MovementState.airborne;
         }
 
+        // check if desiredMoveSpeed has changed drastically
+        if (Mathf.Abs(desiredMoveSpeed - lastDesiredMoveSpeed) > defaultSprintDiff && moveSpeed != 0)
+        {
+            StopAllCoroutines();
+            StartCoroutine(SmoothLerpMoveSpeed());
+        }
+        else
+        {
+            moveSpeed = desiredMoveSpeed;
+        }
+
+        lastDesiredMoveSpeed = desiredMoveSpeed;
     }
 
-    private bool OnSlope()
+
+    public bool OnSlope()
     {
         if(Physics.Raycast(transform.position, Vector3.down, out slopeHit, playerHeight * 0.5f + 0.2f))
         {
@@ -196,9 +262,9 @@ public class NewBehaviourScript : MonoBehaviour
         return false;
     }
 
-    private Vector3 GetSlopeMoveDirection()
+    public Vector3 GetSlopeMoveDirection(Vector3 direction)
     {
-        return Vector3.ProjectOnPlane(moveDirection, slopeHit.normal).normalized;
+        return Vector3.ProjectOnPlane(direction, slopeHit.normal).normalized;
     }
 
 }
