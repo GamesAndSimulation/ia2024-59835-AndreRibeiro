@@ -102,7 +102,7 @@ public class NewBehaviourScript : MonoBehaviour
 
         if(OnSlope())
         {
-            rb.AddForce(GetSlopeMoveDirection() * moveSpeed * 10f, ForceMode.Force);
+            rb.AddForce(GetSlopeMoveDirection() * moveSpeed * 20f, ForceMode.Force);
 
             if(rb.velocity.y > 0)
             {
@@ -110,7 +110,7 @@ public class NewBehaviourScript : MonoBehaviour
             }
         }
 
-        if (grounded)
+        else if (grounded)
         {
             rb.AddForce(moveDirection.normalized * moveSpeed * 10f, ForceMode.Force);
         }
