@@ -43,11 +43,7 @@ public class WallRunning : MonoBehaviour
     public float gravityCounterForce;
 
     [Header("Input")]
-    public KeyCode upwards = KeyCode.LeftShift;
-    public KeyCode downwards = KeyCode.C;
     public KeyCode jump = KeyCode.Space;
-    private bool upwardsInput;
-    private bool downwardsInput;
 
   
 
@@ -78,8 +74,6 @@ public class WallRunning : MonoBehaviour
         horizontalInput = Input.GetAxisRaw("Horizontal");
         verticalInput = Input.GetAxisRaw("Vertical");
 
-        upwardsInput = Input.GetKey(upwards);
-        downwardsInput = Input.GetKey(downwards);
 
         //wallrunning
         if ((wallLeft || wallRight) && verticalInput > 0 && AboveGround() && !exitingWall)
@@ -173,15 +167,6 @@ public class WallRunning : MonoBehaviour
 
         //foward force
         rb.AddForce(wallForward * wallRunForce, ForceMode.Force);
-
-        if(upwardsInput)
-        {
-            rb.velocity = new Vector3(rb.velocity.x, climbSpeed, rb.velocity.z);
-        }
-        if(downwardsInput)
-        {
-            rb.velocity = new Vector3(rb.velocity.x, -climbSpeed, rb.velocity.z);
-        }
 
         //pushing the player towards the wall
         if(!(wallLeft && horizontalInput > 0) && !(wallRight && horizontalInput < 0))
