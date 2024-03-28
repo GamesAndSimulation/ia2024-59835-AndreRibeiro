@@ -11,6 +11,8 @@ public class GunSystem : MonoBehaviour
     public bool allowButtonHold;
     private int bulletsLeft, bulletsShot;
 
+    public LineRenderer laser;
+
     bool shooting, readyToShoot, reloading;
 
     public Camera fpsCam;
@@ -26,13 +28,21 @@ public class GunSystem : MonoBehaviour
     {
         bulletsLeft = magazineSize;
         readyToShoot = true;
+        laser.enabled = false;
     }
 
     // Update is called once per frame
     void Update()
     {
         MyInput();
+        KeepLaserOnPoint();
     }
+
+    void KeepLaserOnPoint()
+    {
+       laser.SetPosition(0, attackPoint.position);
+    }
+
 
     void MyInput()
     {
@@ -74,10 +84,11 @@ public class GunSystem : MonoBehaviour
 
         readyToShoot = false;
 
-        float x = Random.Range(-spread, spread);
-        float y = Random.Range(-spread, spread);
+        Vector3 direction = fpsCam.transform.forward;
 
-        Vector3 direction = fpsCam.transform.forward + new Vector3(x, y, 0);
+        laser.enabled = true;
+        laser.SetPosition(0, attackPoint.position);
+        laser.SetPosition(1, attackPoint.position + direction * range);
 
         if(Physics.Raycast(fpsCam.transform.position, direction, out rayHit, range, whatIsEnemy))
         {
@@ -104,7 +115,10 @@ public class GunSystem : MonoBehaviour
 
     void ResetShoot()
     {
-        readyToShoot = true; 
+        readyToShoot = true;
+        laser.enabled = false;
+        laser.SetPosition(0, attackPoint.position);
+        laser.SetPosition(1, attackPoint.position);
     }
 
 }
