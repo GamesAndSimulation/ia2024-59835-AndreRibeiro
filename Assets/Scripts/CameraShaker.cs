@@ -10,7 +10,6 @@ public class CameraShaker : MonoBehaviour
 
     public IEnumerator Shake (float duration, float magnitude)
     {
-        Debug.Log("Shake");
 
         float elapsed = 0.0f;
 

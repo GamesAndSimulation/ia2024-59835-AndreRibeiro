@@ -93,7 +93,7 @@ public class GunSystem : MonoBehaviour
 
             if(rayHit.collider.CompareTag("Enemy"))
             {
-                int remaining = rayHit.collider.GetComponent<EnemyScript>().TakeDamage(damage);
+                rayHit.collider.GetComponent<EnemyScript>().TakeDamage(damage);
             }
 
         }
