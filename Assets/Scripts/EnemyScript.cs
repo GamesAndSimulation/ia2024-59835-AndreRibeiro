@@ -18,9 +18,9 @@ public class EnemyScript : MonoBehaviour
     public int patrolSpeed;
     public int chaseSpeed;
 
-    private bool hasPatrolPoint;
+    private bool hasPatrolPoint, foundPlayer;
 
-    private int health = 100;   
+    public int health;
     
     // Start is called before the first frame update
     void Start()
@@ -41,14 +41,17 @@ public class EnemyScript : MonoBehaviour
         bool playerInSight = Physics.CheckSphere(transform.position, sightRange, playerMask);
         bool playerInAttackRange = Physics.CheckSphere(transform.position, attackRange, playerMask);
 
+        if(health <= 0)
+        {
+            Die();
+        }
         if (!playerInSight && !playerInAttackRange)
         {
             Debug.Log("Patrolling");
             Patrol();
         }
-        if (playerInSight && !playerInAttackRange)
+        if (foundPlayer || (playerInSight && !playerInAttackRange))
         {
-            Debug.Log("Chasing");
             Chase();
         }
         if (playerInSight && playerInAttackRange)
@@ -57,6 +60,11 @@ public class EnemyScript : MonoBehaviour
             Attack();
         }
 
+    }
+
+    void Die()
+    {
+        Destroy(gameObject);
     }
 
     void Patrol()
@@ -94,6 +102,7 @@ public class EnemyScript : MonoBehaviour
 
     void Chase()
     {
+        foundPlayer = true;
         navAgent.speed = chaseSpeed;
         navAgent.SetDestination(playerTransform.position);
     }
@@ -106,6 +115,7 @@ public class EnemyScript : MonoBehaviour
 
     public int TakeDamage(int damage)
     {
+       foundPlayer = true;
        return health -= damage;
     }
 
