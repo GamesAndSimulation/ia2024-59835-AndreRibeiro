@@ -13,12 +13,12 @@ public class GunSystem : MonoBehaviour
 
     public LineRenderer laser;
 
-    bool shooting, readyToShoot, reloading;
+    private bool shooting, readyToShoot, reloading;
 
     public Camera fpsCam;
     public Transform attackPoint;
     public RaycastHit rayHit;
-    public LayerMask whatIsEnemy;
+    public LayerMask enemyMask;
 
     public CameraShaker cameraShaker;
     public float shakeDuration, shakeMagnitude;
@@ -80,8 +80,6 @@ public class GunSystem : MonoBehaviour
 
     void Shoot()
     {
-        Debug.Log("Shoot");
-
         readyToShoot = false;
 
         Vector3 direction = fpsCam.transform.forward;
@@ -90,13 +88,13 @@ public class GunSystem : MonoBehaviour
         laser.SetPosition(0, attackPoint.position);
         laser.SetPosition(1, attackPoint.position + direction * range);
 
-        if(Physics.Raycast(fpsCam.transform.position, direction, out rayHit, range, whatIsEnemy))
+        if(Physics.Raycast(fpsCam.transform.position, direction, out rayHit, range, enemyMask))
         {
-            Debug.Log(rayHit.collider.name);
 
             if(rayHit.collider.CompareTag("Enemy"))
             {
-                rayHit.collider.GetComponent<EnemyScript>().TakeDamage(damage);
+                int remaining = rayHit.collider.GetComponent<EnemyScript>().TakeDamage(damage);
+                Debug.Log("health " + remaining);
             }
 
         }
