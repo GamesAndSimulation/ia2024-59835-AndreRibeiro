@@ -47,7 +47,6 @@ public class EnemyScript : MonoBehaviour
         }
         if (!playerInSight && !playerInAttackRange)
         {
-            Debug.Log("Patrolling");
             Patrol();
         }
         if (foundPlayer || (playerInSight && !playerInAttackRange))
@@ -56,7 +55,6 @@ public class EnemyScript : MonoBehaviour
         }
         if (playerInSight && playerInAttackRange)
         {
-           Debug.Log("Attacking");  
             Attack();
         }
 

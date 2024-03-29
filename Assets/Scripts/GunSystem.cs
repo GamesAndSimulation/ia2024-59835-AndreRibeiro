@@ -94,12 +94,11 @@ public class GunSystem : MonoBehaviour
             if(rayHit.collider.CompareTag("Enemy"))
             {
                 int remaining = rayHit.collider.GetComponent<EnemyScript>().TakeDamage(damage);
-                Debug.Log("health " + remaining);
             }
 
         }
 
-        cameraShaker.Shake(shakeDuration, shakeMagnitude);
+        StartCoroutine(cameraShaker.Shake(shakeDuration, shakeMagnitude));
 
         bulletsLeft--;
         Invoke("ResetShoot", timeBetweenShooting);
