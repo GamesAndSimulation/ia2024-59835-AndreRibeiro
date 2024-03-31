@@ -31,6 +31,9 @@ public class EnemyScript : MonoBehaviour
     public Transform muzzle;
 
     public int health;
+
+    [Header("Animation")]
+    public Animator anim;
     
     // Start is called before the first frame update
     void Start()
@@ -42,6 +45,8 @@ public class EnemyScript : MonoBehaviour
         readyToShoot = true;
         bulletsLeft = magazineSize;
         laser.enabled = false;
+
+        anim = GetComponent<Animator>();
     }
 
     // Update is called once per frame
@@ -84,6 +89,9 @@ public class EnemyScript : MonoBehaviour
 
     void Patrol()
     {
+        anim.SetBool("Patrolling", true);
+        anim.SetBool("Chasing", false);
+        anim.SetBool("Attacking", false);
         navAgent.speed = patrolSpeed;
         if (!hasPatrolPoint)
         {
@@ -117,13 +125,19 @@ public class EnemyScript : MonoBehaviour
 
     void Chase()
     {
-        foundPlayer = true;
+        anim.SetBool("Patrolling", false);
+        anim.SetBool("Chasing", true);
+        anim.SetBool("Attacking", false);
+
         navAgent.speed = chaseSpeed;
         navAgent.SetDestination(playerTransform.position);
     }
 
     void Attack()
     {
+        anim.SetBool("Patrolling", false);
+        anim.SetBool("Chasing", false);
+        anim.SetBool("Attacking", true);
         //stops
         navAgent.SetDestination(transform.position);
 
