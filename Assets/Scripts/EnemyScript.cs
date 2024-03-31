@@ -16,6 +16,8 @@ public class EnemyScript : MonoBehaviour
     public int sightRange;
     public int attackRange;
     public int patrolRadius;
+    public int rotationSpeed;
+    public int rotationOffset;
 
     public int patrolSpeed;
     public int chaseSpeed;
@@ -26,7 +28,7 @@ public class EnemyScript : MonoBehaviour
     private bool shooting, reloading, readyToShoot;
     private int bulletsLeft, bulletsShot;
     public int magazineSize, reloadTime;
-    public float timeBetweenShots, timeBetweenShooting, accuracy;    
+    public float timeBetweenShots, timeBetweenShooting, inaccuracy;    
     public LineRenderer laser;
     public Transform muzzle;
 
@@ -141,6 +143,11 @@ public class EnemyScript : MonoBehaviour
         //stops
         navAgent.SetDestination(transform.position);
 
+        Vector3 directionToPlayer = (playerTransform.position - transform.position).normalized;
+        Quaternion lookRotation = Quaternion.LookRotation(directionToPlayer);
+        lookRotation *= Quaternion.Euler(0, rotationOffset, 0);
+        transform.rotation = Quaternion.RotateTowards(transform.rotation, lookRotation, Time.deltaTime * rotationSpeed);
+
         shooting = true;
 
         if (bulletsLeft == 0 && !reloading)
@@ -172,9 +179,9 @@ public class EnemyScript : MonoBehaviour
     {
         readyToShoot = false;
 
-        Vector3 direction = playerTransform.position - transform.position;
+        Vector3 direction = playerTransform.position - muzzle.position;
 
-        direction += UnityEngine.Random.insideUnitSphere * accuracy;
+        direction += UnityEngine.Random.insideUnitSphere * inaccuracy;
 
         RaycastHit hit;
 
@@ -182,7 +189,7 @@ public class EnemyScript : MonoBehaviour
         laser.SetPosition(0, muzzle.position);
         laser.SetPosition(1, muzzle.position + direction * attackRange);
 
-        if (Physics.Raycast(transform.position, direction, out hit, playerMask))
+        if (Physics.Raycast(muzzle.position, direction, out hit, playerMask))
         {
             if (hit.collider.CompareTag("Player"))
             {
