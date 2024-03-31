@@ -23,12 +23,16 @@ public class GunSystem : MonoBehaviour
     public CameraShaker cameraShaker;
     public float shakeDuration, shakeMagnitude;
 
+    //public AudioSource audioSrc;
+    public AudioSystem AudioSystem;
+
     // Start is called before the first frame update
     void Start()
     {
         bulletsLeft = magazineSize;
         readyToShoot = true;
         laser.enabled = false;
+        AudioSystem = GameObject.Find("AudioSystem").GetComponent<AudioSystem>();
     }
 
     // Update is called once per frame
@@ -69,6 +73,7 @@ public class GunSystem : MonoBehaviour
     void Reload()
     {
         reloading = true;
+        AudioSystem.PlaySFXByName("player_reload_sfx"); 
         Invoke("ReloadFinished", reloadTime);
     }
 
@@ -99,6 +104,7 @@ public class GunSystem : MonoBehaviour
         }
 
         StartCoroutine(cameraShaker.Shake(shakeDuration, shakeMagnitude));
+        AudioSystem.PlaySFXByName("player_shoot_sfx");
 
         bulletsLeft--;
         Invoke("ResetShoot", timeBetweenShooting);

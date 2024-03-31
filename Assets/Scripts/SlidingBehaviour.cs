@@ -25,7 +25,6 @@ public class SlidingBehaviour : MonoBehaviour
     private float verticalInput;
 
 
-    // Start is called before the first frame update
     void Start()
     {
         rb = GetComponent<Rigidbody>();
@@ -34,13 +33,12 @@ public class SlidingBehaviour : MonoBehaviour
         startYScale = playerObj.localScale.y;
     }
 
-    // Update is called once per frame
     void Update()
     {
         horizontalInput = Input.GetAxis("Horizontal");
         verticalInput = Input.GetAxis("Vertical");
 
-        if (Input.GetKeyDown(slideKey) && (horizontalInput != 0 || verticalInput != 0))
+        if (Input.GetKeyDown(slideKey) && (horizontalInput != 0 || verticalInput != 0) && !playerMovement.state.Equals("airborne"))
         {
             StartSlide();
         }
@@ -63,7 +61,6 @@ public class SlidingBehaviour : MonoBehaviour
     {
         playerMovement.sliding = true;
         
-        //TODO: Change this when a model is added
         playerObj.localScale = new Vector3(playerObj.localScale.x, slideYScale, playerObj.localScale.z);
         rb.AddForce(Vector3.down * 5f, ForceMode.Impulse);
 
@@ -95,7 +92,6 @@ public class SlidingBehaviour : MonoBehaviour
     {
         playerMovement.sliding = false;
 
-        //TODO: Change this when a model is added
         playerObj.localScale = new Vector3(playerObj.localScale.x, startYScale, playerObj.localScale.z);
     }
 

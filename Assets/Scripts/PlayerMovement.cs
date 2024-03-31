@@ -54,6 +54,11 @@ public class PlayerMovement : MonoBehaviour
 
     public bool wallrunning;
 
+    [Header("Sound")]
+    private Sound_PlayerMovement audioHandler;
+
+    
+
     public enum MovementState
     {
         walking,
@@ -71,6 +76,7 @@ public class PlayerMovement : MonoBehaviour
         rb.freezeRotation = true;
         readyToJump = true;
         defaultSprintDiff = Mathf.Abs(sprintSpeed - walkSpeed);
+        audioHandler = GetComponent<Sound_PlayerMovement>();
     }
 
     // Update is called once per frame
@@ -105,12 +111,14 @@ public class PlayerMovement : MonoBehaviour
         {
             state = MovementState.wallrunning;
             desiredMoveSpeed = wallRunSpeed;
+            audioHandler.PlayFootsteps();
         }
 
         // Mode - Sliding
         if (sliding)
         {
             state = MovementState.sliding;
+            audioHandler.PlaySlide();
 
             if (OnSlope() && rb.velocity.y < 0.1f)
                 desiredMoveSpeed = slideSpeed;
@@ -128,9 +136,10 @@ public class PlayerMovement : MonoBehaviour
 
         // Mode - Walking
         else if (grounded)
-        {
+        { 
             state = MovementState.walking;
             desiredMoveSpeed = walkSpeed;
+            audioHandler.PlayFootsteps();
         }
 
         // Mode - Air
