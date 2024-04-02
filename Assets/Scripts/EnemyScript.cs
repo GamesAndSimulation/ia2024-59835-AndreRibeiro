@@ -1,9 +1,5 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
-using UnityEngine.SocialPlatforms;
 
 public class EnemyScript : MonoBehaviour
 {
@@ -37,7 +33,17 @@ public class EnemyScript : MonoBehaviour
     [Header("Animation")]
     public Animator anim;
     public GameObject explosionPE;
-    
+
+    [Header("Sound")]
+    public AudioSource sfxAudioSrc;
+    public AudioSource voiceAudioSrc;
+    public AudioClip shootSound, reloadSound, explosionSound;
+    public AudioClip[] footstepSFX;
+    public AudioClip[] voices;
+    private float nextStepTime;
+    private bool nextChaseVoice; //if enemy does a chase voice, it will do an attack voice next
+
+
     // Start is called before the first frame update
     void Start()
     {
@@ -50,6 +56,8 @@ public class EnemyScript : MonoBehaviour
         laser.enabled = false;
 
         anim = GetComponent<Animator>();
+
+        nextChaseVoice = true;
     }
 
     // Update is called once per frame
@@ -88,7 +96,8 @@ public class EnemyScript : MonoBehaviour
     void Die()
     {
         Vector3 explosionTransform = new Vector3(transform.position.x, transform.position.y + 1.5f, transform.position.z);
-        Instantiate(explosionPE, explosionTransform, Quaternion.identity);
+        GameObject explosionInstance = Instantiate(explosionPE, explosionTransform, Quaternion.identity);
+        Destroy(explosionInstance, 2f);
         Destroy(gameObject);
     }
 
@@ -105,6 +114,7 @@ public class EnemyScript : MonoBehaviour
         else
         {
             goToPatrolPoint();
+            PlayFootsteps("patrol");
         }
     }
 
@@ -136,6 +146,8 @@ public class EnemyScript : MonoBehaviour
 
         navAgent.speed = chaseSpeed;
         navAgent.SetDestination(playerTransform.position);
+        PlayFootsteps("chase");
+        PlaySpottedVoice();
     }
 
     void Attack()
@@ -145,6 +157,7 @@ public class EnemyScript : MonoBehaviour
         anim.SetBool("Attacking", true);
         //stops
         navAgent.SetDestination(transform.position);
+
 
         Vector3 directionToPlayer = (playerTransform.position - transform.position).normalized;
         Quaternion lookRotation = Quaternion.LookRotation(directionToPlayer);
@@ -164,11 +177,13 @@ public class EnemyScript : MonoBehaviour
             Shoot();
         }
 
+        PlayAttackVoice();
     }
 
     void Reload()
     {
         reloading = true;
+        PlayReloadSound();
         Invoke("ReloadFinished", reloadTime);
     }
 
@@ -200,6 +215,8 @@ public class EnemyScript : MonoBehaviour
             }
         }
 
+        PlayShootSound();
+
         bulletsLeft--;
         Invoke("ResetShot", timeBetweenShooting);
         if (bulletsShot > 0 && bulletsLeft > 0)
@@ -223,4 +240,66 @@ public class EnemyScript : MonoBehaviour
        return health -= damage;
     }
 
+    //Sounds
+
+    private void PlayFootsteps(string state)
+    {
+        float vel;
+
+        if (state.Equals("patrol"))
+        {
+            vel = patrolSpeed;
+        }
+        else
+        {
+            vel = chaseSpeed;
+        }
+        float stepInterval = Mathf.Lerp(0.5f, 0.2f, vel / 20);
+
+        if (vel > 0.1f && Time.time > nextStepTime)
+        {
+            sfxAudioSrc.clip = footstepSFX[Random.Range(0, footstepSFX.Length)];
+            sfxAudioSrc.Play();
+            nextStepTime = Time.time + stepInterval;
+        }
+    }
+
+    private void PlaySpottedVoice()
+    {
+        if (nextChaseVoice)
+        {
+            voiceAudioSrc.clip = voices[Random.Range(0, 4)];
+            voiceAudioSrc.Play();
+            nextChaseVoice = false;
+        }
+    }
+
+    private void PlayAttackVoice()
+    {
+        if (!nextChaseVoice)
+        {
+            voiceAudioSrc.clip = voices[Random.Range(5, 7)];
+            voiceAudioSrc.Play();
+            nextChaseVoice = true;
+        }
+    }
+
+    private void PlayShootSound()
+    {
+        sfxAudioSrc.clip = shootSound;
+        sfxAudioSrc.Play();
+    }
+
+    private void PlayReloadSound()
+    {
+        sfxAudioSrc.clip = reloadSound;
+        sfxAudioSrc.Play();
+    }
+
+    private void PlayExplosionSound()
+    {
+        //on voice becuse it is a one time sound and might overlap with shooting sounds
+        voiceAudioSrc.clip = explosionSound;
+        voiceAudioSrc.Play();
+    }
 }

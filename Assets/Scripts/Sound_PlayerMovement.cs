@@ -15,7 +15,6 @@ public class Sound_PlayerMovement : MonoBehaviour
     {
         rb = GetComponent<Rigidbody>();
         audioSrc = GetComponent<AudioSource>();
-
     }
 
     public void PlayFootsteps()
