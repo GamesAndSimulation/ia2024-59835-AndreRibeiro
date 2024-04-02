@@ -36,6 +36,7 @@ public class EnemyScript : MonoBehaviour
 
     [Header("Animation")]
     public Animator anim;
+    public GameObject explosionPE;
     
     // Start is called before the first frame update
     void Start()
@@ -86,6 +87,8 @@ public class EnemyScript : MonoBehaviour
 
     void Die()
     {
+        Vector3 explosionTransform = new Vector3(transform.position.x, transform.position.y + 1.5f, transform.position.z);
+        Instantiate(explosionPE, explosionTransform, Quaternion.identity);
         Destroy(gameObject);
     }
 
