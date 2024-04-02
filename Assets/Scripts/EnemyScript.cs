@@ -97,7 +97,9 @@ public class EnemyScript : MonoBehaviour
     {
         Vector3 explosionTransform = new Vector3(transform.position.x, transform.position.y + 1.5f, transform.position.z);
         GameObject explosionInstance = Instantiate(explosionPE, explosionTransform, Quaternion.identity);
-        Destroy(explosionInstance, 2f);
+        AudioSource explosionSource = explosionInstance.AddComponent<AudioSource>();
+        PlayExplosionSound(explosionSource);
+        Destroy(explosionInstance, explosionSound.length + 2f);
         Destroy(gameObject);
     }
 
@@ -296,10 +298,10 @@ public class EnemyScript : MonoBehaviour
         sfxAudioSrc.Play();
     }
 
-    private void PlayExplosionSound()
+    private void PlayExplosionSound(AudioSource src)
     {
-        //on voice becuse it is a one time sound and might overlap with shooting sounds
-        voiceAudioSrc.clip = explosionSound;
-        voiceAudioSrc.Play();
+        src.clip = explosionSound;
+        src.volume = 0.2f;
+        src.Play();
     }
 }
