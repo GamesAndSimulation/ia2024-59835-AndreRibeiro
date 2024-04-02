@@ -36,4 +36,20 @@ public class MovableSurfaceBehaviour : MonoBehaviour
         Invoke("ChangeState", changeTimer);
     }
 
+    void OnCollisionEnter(Collision other)
+    {
+        if(other.gameObject.tag == "Player")
+        {
+            other.transform.SetParent(transform);
+        }
+    }
+
+    void OnCollisionExit(Collision other)
+    {
+        if(other.gameObject.tag == "Player")
+        {
+            other.transform.SetParent(null);
+        }
+    }
+
 }
