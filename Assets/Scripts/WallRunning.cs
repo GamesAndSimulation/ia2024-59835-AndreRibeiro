@@ -45,6 +45,8 @@ public class WallRunning : MonoBehaviour
     [Header("Input")]
     public KeyCode jump = KeyCode.Space;
 
+    private float cameraFOV = 60f;
+
   
 
     // Start is called before the first frame update
@@ -52,6 +54,7 @@ public class WallRunning : MonoBehaviour
     {
         rb = GetComponent<Rigidbody>();
         playerMovement = GetComponent<PlayerMovement>();
+        cameraFOV = fpsCam.getCurrentFOV();
     }
 
     // Update is called once per frame
@@ -146,7 +149,7 @@ public class WallRunning : MonoBehaviour
         wallRunTimer = maxWallRunTime;
         rb.velocity = new Vector3(rb.velocity.x, 0, rb.velocity.z);
 
-        fpsCam.DoFov(fpsCam.getCurrentFOV() + 10f);
+        fpsCam.DoFov(cameraFOV + 10f);
         if (wallLeft) fpsCam.DoTilt(-5f);
         if (wallRight) fpsCam.DoTilt(5f);
 
