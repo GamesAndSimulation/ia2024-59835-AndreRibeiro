@@ -41,7 +41,7 @@ public class EnemyScript : MonoBehaviour
     public AudioClip[] footstepSFX;
     public AudioClip[] voices;
     private float nextStepTime;
-    private bool hasTalked;
+    private bool hasSpottedVoiceLine, hasAttackedVoiceLine;
 
     void Start()
     {
@@ -55,7 +55,8 @@ public class EnemyScript : MonoBehaviour
 
         anim = GetComponent<Animator>();
 
-        hasTalked = false;
+        hasAttackedVoiceLine = false;
+        hasSpottedVoiceLine = false;
     }
 
     void Update()
@@ -280,27 +281,34 @@ public class EnemyScript : MonoBehaviour
 
     private void PlaySpottedVoice()
     {
-        if (!hasTalked)
+        if (!hasSpottedVoiceLine)
         {
             voiceAudioSrc.clip = voices[Random.Range(0, 4)];
             voiceAudioSrc.Play();
+            hasSpottedVoiceLine = true;
+            Invoke("ResetSpottedVoice", 30);
         }
+    }
+
+    private void ResetSpottedVoice()
+    {
+        hasSpottedVoiceLine = false;
     }
 
     private void PlayAttackVoice()
     {
-        if (!hasTalked)
+        if (!hasAttackedVoiceLine)
         {
             voiceAudioSrc.clip = voices[Random.Range(5, 7)];
             voiceAudioSrc.Play();
-            hasTalked = true;
-            Invoke("ResetTalk", 30);
+            hasAttackedVoiceLine = true;
+            Invoke("ResetAttackVoice", 30);
         }
     }
 
-    private void ResetTalk()
+    private void ResetAttackVoice()
     {
-        hasTalked = false;
+        hasAttackedVoiceLine = false;
     }
 
     private void PlayShootSound()
