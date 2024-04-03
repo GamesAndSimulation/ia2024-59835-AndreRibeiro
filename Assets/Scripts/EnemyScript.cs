@@ -8,7 +8,7 @@ public class EnemyScript : MonoBehaviour
     private NavMeshAgent navAgent;
 
     public Transform playerTransform;
-    public LayerMask groundMask, playerMask;
+    public LayerMask groundMask, playerMask, wallMask;
     public int sightRange;
     public int attackRange;
     public int patrolRadius;
@@ -24,7 +24,7 @@ public class EnemyScript : MonoBehaviour
     private bool shooting, reloading, readyToShoot;
     private int bulletsLeft, bulletsShot;
     public int magazineSize, reloadTime;
-    public float timeBetweenShots, timeBetweenShooting, inaccuracy;    
+    public float timeBetweenShots, timeBetweenShooting, innacuracy;    
     public LineRenderer laser;
     public Transform muzzle;
 
@@ -41,10 +41,8 @@ public class EnemyScript : MonoBehaviour
     public AudioClip[] footstepSFX;
     public AudioClip[] voices;
     private float nextStepTime;
-    private bool nextChaseVoice; //if enemy does a chase voice, it will do an attack voice next
+    private bool hasTalked;
 
-
-    // Start is called before the first frame update
     void Start()
     {
         navAgent = GetComponent<NavMeshAgent>();
@@ -57,10 +55,9 @@ public class EnemyScript : MonoBehaviour
 
         anim = GetComponent<Animator>();
 
-        nextChaseVoice = true;
+        hasTalked = false;
     }
 
-    // Update is called once per frame
     void Update()
     {
         StateHandler();
@@ -129,6 +126,8 @@ public class EnemyScript : MonoBehaviour
         {
             hasPatrolPoint = true;
             navAgent.SetDestination(hit.position);
+            Vector3 rotation = new Vector3(0, rotationOffset, 0);
+            transform.LookAt(hit.position + rotation);
         }
     }
 
@@ -138,6 +137,7 @@ public class EnemyScript : MonoBehaviour
         {
             hasPatrolPoint = false;
         }
+        
     }
 
     void Chase()
@@ -165,7 +165,7 @@ public class EnemyScript : MonoBehaviour
         Quaternion lookRotation = Quaternion.LookRotation(directionToPlayer);
         lookRotation *= Quaternion.Euler(0, rotationOffset, 0);
         transform.rotation = Quaternion.RotateTowards(transform.rotation, lookRotation, Time.deltaTime * rotationSpeed);
-
+        
         shooting = true;
 
         if (bulletsLeft == 0 && !reloading)
@@ -200,20 +200,31 @@ public class EnemyScript : MonoBehaviour
         readyToShoot = false;
 
         Vector3 direction = playerTransform.position - muzzle.position;
-
-        direction += UnityEngine.Random.insideUnitSphere * inaccuracy;
+        
+        direction += UnityEngine.Random.insideUnitSphere * innacuracy;
 
         RaycastHit hit;
 
-        laser.enabled = true;
-        laser.SetPosition(0, muzzle.position);
-        laser.SetPosition(1, muzzle.position + direction * attackRange);
-
-        if (Physics.Raycast(muzzle.position, direction, out hit, playerMask))
+        if(Physics.Raycast(muzzle.position, direction, out hit, attackRange, groundMask))
         {
+            laser.enabled = true;
+            laser.SetPosition(0, muzzle.position);
+            laser.SetPosition(1, hit.point);
+        }
+        else if(Physics.Raycast(muzzle.position, direction, out hit, attackRange, wallMask))
+        {
+            laser.enabled = true;
+            laser.SetPosition(0, muzzle.position);
+            laser.SetPosition(1, hit.point);
+        }
+        else if (Physics.Raycast(muzzle.position, direction, out hit, attackRange, playerMask))
+        {
+            laser.enabled = true;
+            laser.SetPosition(0, muzzle.position);
+            laser.SetPosition(1, muzzle.position + direction*attackRange);
             if (hit.collider.CompareTag("Player"))
             {
-                //hit.transform.GetComponent<PlayerMovement>().TakeDamage();
+                hit.transform.GetComponent<PlayerVariables>().TakeDamage(10);
             }
         }
 
@@ -261,6 +272,7 @@ public class EnemyScript : MonoBehaviour
         if (vel > 0.1f && Time.time > nextStepTime)
         {
             sfxAudioSrc.clip = footstepSFX[Random.Range(0, footstepSFX.Length)];
+            sfxAudioSrc.volume = 0.05f;
             sfxAudioSrc.Play();
             nextStepTime = Time.time + stepInterval;
         }
@@ -268,33 +280,40 @@ public class EnemyScript : MonoBehaviour
 
     private void PlaySpottedVoice()
     {
-        if (nextChaseVoice)
+        if (!hasTalked)
         {
             voiceAudioSrc.clip = voices[Random.Range(0, 4)];
             voiceAudioSrc.Play();
-            nextChaseVoice = false;
         }
     }
 
     private void PlayAttackVoice()
     {
-        if (!nextChaseVoice)
+        if (!hasTalked)
         {
             voiceAudioSrc.clip = voices[Random.Range(5, 7)];
             voiceAudioSrc.Play();
-            nextChaseVoice = true;
+            hasTalked = true;
+            Invoke("ResetTalk", 30);
         }
+    }
+
+    private void ResetTalk()
+    {
+        hasTalked = false;
     }
 
     private void PlayShootSound()
     {
         sfxAudioSrc.clip = shootSound;
+        sfxAudioSrc.volume = 0.2f;
         sfxAudioSrc.Play();
     }
 
     private void PlayReloadSound()
     {
         sfxAudioSrc.clip = reloadSound;
+        sfxAudioSrc.volume = 0.2f;
         sfxAudioSrc.Play();
     }
 

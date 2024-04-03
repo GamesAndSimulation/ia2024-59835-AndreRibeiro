@@ -321,6 +321,9 @@ MonoBehaviour:
   playerMask:
     serializedVersion: 2
     m_Bits: 8
+  wallMask:
+    serializedVersion: 2
+    m_Bits: 128
   sightRange: 40
   attackRange: 20
   patrolRadius: 30
@@ -331,8 +334,8 @@ MonoBehaviour:
   magazineSize: 30
   reloadTime: 1
   timeBetweenShots: 0
-  timeBetweenShooting: 0.05
-  inaccuracy: 0.7
+  timeBetweenShooting: 0.15
+  innacuracy: 2.5
   laser: {fileID: 4858598985318295130}
   muzzle: {fileID: 8242983170386728741}
   health: 200
