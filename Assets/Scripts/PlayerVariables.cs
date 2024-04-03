@@ -1,25 +1,39 @@
-using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class PlayerVariables : MonoBehaviour
 {
 
-    public float health;
-    public float shield;
+    public int health;
+    public int shield;
 
     public TextMeshProUGUI healthText;
     public TextMeshProUGUI shieldText;
 
     private void Update()
     {
+        UpdateUI();
+        if (health <= 0)
+        {
+            Die();
+        }
+    }
+
+    private void UpdateUI()
+    {
         healthText.text = "Health: " + health;
         shieldText.text = "Shield: " + shield;
     }
 
-    public void TakeDamage(float damage)
+    private void Die()
+    {
+        Scene currentScene = SceneManager.GetActiveScene();
+
+        SceneManager.LoadScene(currentScene.name);
+    }
+
+    public void TakeDamage(int damage)
     {
         if((shield - damage) > 0)
         {
@@ -36,15 +50,14 @@ public class PlayerVariables : MonoBehaviour
             health -= damage;
         }
 
-        Debug.Log("Health: " + health + " Shield: " + shield);
     }
 
-    public void Heal(float heal)
+    public void Heal(int heal)
     {
         health += heal;
     }
 
-    public void AddShield(float shield)
+    public void AddShield(int shield)
     {
         this.shield += shield;
     }
