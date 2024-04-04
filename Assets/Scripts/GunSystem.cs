@@ -18,7 +18,7 @@ public class GunSystem : MonoBehaviour
     public Camera fpsCam;
     public Transform attackPoint;
     public RaycastHit rayHit;
-    public LayerMask enemyMask;
+    public LayerMask enemyMask, targetMask;
 
     public CameraShaker cameraShaker;
     public float shakeDuration, shakeMagnitude;
@@ -101,6 +101,14 @@ public class GunSystem : MonoBehaviour
                 rayHit.collider.GetComponent<EnemyScript>().TakeDamage(damage);
             }
 
+        }
+
+        else if (Physics.Raycast(fpsCam.transform.position, direction, out rayHit, range, targetMask))
+        {
+            if(rayHit.collider.CompareTag("Target"))
+            {
+                rayHit.collider.GetComponent<TargetScript>().TakeDamage(damage);
+            }
         }
 
         StartCoroutine(cameraShaker.Shake(shakeDuration, shakeMagnitude));

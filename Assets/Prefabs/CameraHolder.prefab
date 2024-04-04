@@ -521,6 +521,9 @@ MonoBehaviour:
   enemyMask:
     serializedVersion: 2
     m_Bits: 512
+  targetMask:
+    serializedVersion: 2
+    m_Bits: 1024
   cameraShaker: {fileID: 2928236681901072684}
   shakeDuration: 0.05
   shakeMagnitude: 0.001
