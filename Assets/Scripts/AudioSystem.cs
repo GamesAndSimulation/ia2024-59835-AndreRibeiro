@@ -82,6 +82,11 @@ public class AudioSystem : MonoBehaviour
             sound.source.Play();
     }
 
+    public void PlayMusicByIndex(int index)
+    {
+        music[index].source.Play();
+    }
+
     public void PlayVoiceLineByName(String name)
     {
         SoundClass sound = Array.Find(voiceLines, sound => sound.name == name);

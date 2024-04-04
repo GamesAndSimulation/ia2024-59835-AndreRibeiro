@@ -806,6 +806,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   type: 1
   value: 50
+  sfx: {fileID: 8300000, guid: a164f05f17033854eaff295a2fd5b5cc, type: 3}
 --- !u!1 &6272958019143314466
 GameObject:
   m_ObjectHideFlags: 0

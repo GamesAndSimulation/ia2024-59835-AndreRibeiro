@@ -6,16 +6,24 @@ public class ElevatorScript : MonoBehaviour
 {
     public Transform destination;
     public float speed;
-    private bool activated,moved;
+    public float waitTime;
+    private bool activated,moved, ready;
+
+    private void Start()
+    {
+        ready = false;
+        activated = false;
+        moved = false;
+    }
 
     private void Update()
     {
-        if (activated && !moved)
+
+        if (ready && activated && !moved)
         {
             Move();
         }
     }
-
     private void Move()
     {
         transform.position = Vector3.MoveTowards(transform.position, destination.position, Time.deltaTime * speed);
@@ -33,6 +41,13 @@ public class ElevatorScript : MonoBehaviour
         }
 
         activated = true;
+
+        Invoke("setReady", waitTime);
+    }
+
+    void setReady()
+    {
+        ready = true;
     }
 
     private void OnCollisionExit(Collision collision)

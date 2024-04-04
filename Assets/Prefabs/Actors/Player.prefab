@@ -214,7 +214,7 @@ MonoBehaviour:
   wallRunSpeed: 8.5
   speedIncreaseMultiplier: 1.5
   slopeIncreaseMultiplier: 2.5
-  groundDrag: 4
+  groundDrag: 6
   jumpForce: 10
   jumpCooldown: 0.25
   airMultiplier: 0.4

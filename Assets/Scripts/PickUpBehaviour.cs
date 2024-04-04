@@ -5,6 +5,13 @@ public class PickUpBehaviour : MonoBehaviour
 
     public PickUpType type;
     public int value;
+    public AudioClip sfx;
+    private AudioSource audioSrc;
+
+    private void Awake()
+    {
+        audioSrc = GetComponent<AudioSource>();
+    }
 
     public enum PickUpType
     {
@@ -33,6 +40,12 @@ public class PickUpBehaviour : MonoBehaviour
                 other.gameObject.GetComponentInParent<PlayerVariables>().AddShield(value);
                 break;
         }
+
+        GameObject soundLeftover = new GameObject("Sound");
+        AudioSource soundSrc = soundLeftover.AddComponent<AudioSource>();
+        soundSrc.clip = sfx;
+        soundSrc.Play();
+        Destroy(soundLeftover, sfx.length+1f);
         Destroy(gameObject);
     }
 }
