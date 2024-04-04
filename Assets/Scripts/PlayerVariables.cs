@@ -7,12 +7,15 @@ public class PlayerVariables : MonoBehaviour
 
     public int health;
     public int shield;
+    public int speed;
 
     public TextMeshProUGUI healthText;
     public TextMeshProUGUI shieldText;
+    public TextMeshProUGUI speedText;
 
     private void Update()
     {
+        speed = (int)gameObject.GetComponent<Rigidbody>().velocity.magnitude;
         UpdateUI();
         if (health <= 0)
         {
@@ -24,6 +27,7 @@ public class PlayerVariables : MonoBehaviour
     {
         healthText.text = "Health: " + health;
         shieldText.text = "Shield: " + shield;
+        speedText.text = "Speed: " + speed;
     }
 
     private void Die()
