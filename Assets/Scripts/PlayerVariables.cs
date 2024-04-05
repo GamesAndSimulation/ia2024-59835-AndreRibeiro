@@ -8,14 +8,18 @@ public class PlayerVariables : MonoBehaviour
     public int health;
     public int shield;
     public int speed;
+    public int ammo;
 
     public TextMeshProUGUI healthText;
     public TextMeshProUGUI shieldText;
     public TextMeshProUGUI speedText;
+    public TextMeshProUGUI ammoText;
+
 
     private void Update()
     {
         speed = (int)gameObject.GetComponent<Rigidbody>().velocity.magnitude;
+        ammo = GameObject.Find("SciFiGunLightRad").GetComponent<GunSystem>().bulletsLeft;
         UpdateUI();
         if (health <= 0)
         {
@@ -28,6 +32,7 @@ public class PlayerVariables : MonoBehaviour
         healthText.text = "Health: " + health;
         shieldText.text = "Shield: " + shield;
         speedText.text = "Speed: " + speed;
+        ammoText.text = "Ammo: " + ammo;
     }
 
     private void Die()

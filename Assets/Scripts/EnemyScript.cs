@@ -273,7 +273,7 @@ public class EnemyScript : MonoBehaviour
         if (vel > 0.1f && Time.time > nextStepTime)
         {
             sfxAudioSrc.clip = footstepSFX[Random.Range(0, footstepSFX.Length)];
-            sfxAudioSrc.volume = 0.05f;
+            sfxAudioSrc.volume = 0.1f;
             sfxAudioSrc.Play();
             nextStepTime = Time.time + stepInterval;
         }
@@ -314,7 +314,7 @@ public class EnemyScript : MonoBehaviour
     private void PlayShootSound()
     {
         sfxAudioSrc.clip = shootSound;
-        sfxAudioSrc.volume = 0.2f;
+        sfxAudioSrc.volume = 1f;
         sfxAudioSrc.Play();
     }
 

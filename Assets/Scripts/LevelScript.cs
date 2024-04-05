@@ -23,9 +23,22 @@ public class LevelScript : MonoBehaviour
         phase2
     }
 
+    void checkForShortcut()
+    {
+        if(Input.GetKeyDown(KeyCode.Alpha1))
+        {
+            player.transform.position = endCollider.transform.position;
+        }
+    }
+
     void Start()
     {
         phase1Start();
+    }
+
+    void Update()
+    {
+        checkForShortcut();
     }
 
     void phase1Start()
@@ -38,18 +51,20 @@ public class LevelScript : MonoBehaviour
 
     void playFirstVoiceLine()
     {
-        audioSystem.PlayVoiceLineByIndex(0);
+        if(currentPhase == Phase.phase1)
+            audioSystem.PlayVoiceLineByIndex(0);
     }
 
     public void phase1End()
     {
+        currentPhase = Phase.phase2;
         endCollider.enabled = false;
         backdoor.GetComponent<Animator>().SetTrigger("backdoorTrigger");
         audioSystem.PlaySFXByName("door");
         audioSystem.StopMusicByIndex(0);
         audioSystem.PlayMusicByIndex(1);
         audioSystem.PlayVoiceLineByIndex(1);
-        Invoke("phase2Start", 18f); //TODO: change to voice line length
+        Invoke("phase2Start", 18f);
     }
 
     void phase2Start()
@@ -57,7 +72,6 @@ public class LevelScript : MonoBehaviour
         part1.SetActive(false);
         frontdoor.GetComponent<Animator>().SetTrigger("frontdoorTrigger");
         audioSystem.PlaySFXByName("door");
-        currentPhase = Phase.phase2;
     }
 
 

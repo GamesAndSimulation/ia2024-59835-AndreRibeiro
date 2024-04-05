@@ -9,7 +9,8 @@ public class GunSystem : MonoBehaviour
     public float timeBetweenShooting, spread, range, reloadTime, timeBetweenShots;
     public int magazineSize, bulletsPerTap;
     public bool allowButtonHold;
-    private int bulletsLeft, bulletsShot;
+    private int bulletsShot;
+    public int bulletsLeft;
 
     public LineRenderer laser;
 
