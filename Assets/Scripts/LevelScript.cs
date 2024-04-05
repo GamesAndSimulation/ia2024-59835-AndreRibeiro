@@ -18,7 +18,14 @@ public class LevelScript : MonoBehaviour
 
     [Header("Phase2")]
     public GameObject part2;
+    public Collider hqCollider;
+    public Collider forkCollider;
+    public Collider libEntrance;
+    public Collider libEnd;
 
+    [Header("Phase3")]
+    public GameObject part3;
+    public GameObject phase3Pos;
 
     public enum Phase
     {
@@ -77,6 +84,37 @@ public class LevelScript : MonoBehaviour
         part2.SetActive(true);
         frontdoor.GetComponent<Animator>().SetTrigger("frontdoorTrigger");
         audioSystem.PlaySFXByName("door");
+    }
+
+    void triggerForkVoiceline()
+    {
+        forkCollider.enabled = false;
+        //TODO: audioSystem.PlayVoiceLineByIndex(2); add voice line
+    }
+
+    void triggerLibEntrance()
+    {
+        libEntrance.enabled = false;
+        //TODO: audioSystem.PlayVoiceLineByIndex(3); add voice line
+    }
+
+    void triggerLibEnd()
+    {
+        libEnd.enabled = false;
+        //TODO: audioSystem.PlayVoiceLineByIndex(4); add voice line
+    }
+
+    public void phase2End()
+    {
+        audioSystem.StopMusicByIndex(1);
+        part2.SetActive(false);
+    }
+
+    public void phase3Start()
+    {
+        phase2End();
+        part3.SetActive(true);
+        player.transform.position = phase3Pos.transform.position;
     }
 
 
