@@ -123,6 +123,11 @@ public class AudioSystem : MonoBehaviour
             sound.source.Stop();
     }
 
+    public void StopMusicByIndex(int index)
+    {
+        music[index].source.Stop();
+    }
+
     public void StopVoiceLineByName(String name)
     {
         SoundClass sound = Array.Find(voiceLines, sound => sound.name == name);

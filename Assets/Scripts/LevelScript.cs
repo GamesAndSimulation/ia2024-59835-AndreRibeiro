@@ -23,7 +23,7 @@ public class LevelScript : MonoBehaviour
         phase2
     }
 
-    void Awake()
+    void Start()
     {
         phase1Start();
     }
@@ -32,23 +32,31 @@ public class LevelScript : MonoBehaviour
     {
         currentPhase = Phase.phase1;
         part1.SetActive(true);
-        //TODO: audioSystem.PlayMusicByIndex(0);
+        audioSystem.PlayMusicByIndex(0);
+        Invoke("playFirstVoiceLine", 5f);
+    }
+
+    void playFirstVoiceLine()
+    {
+        audioSystem.PlayVoiceLineByIndex(0);
     }
 
     public void phase1End()
     {
         endCollider.enabled = false;
         backdoor.GetComponent<Animator>().SetTrigger("backdoorTrigger");
-        //TODO: audioSystem.PlaySFXByName("door");
-        //TODO: audioSystem.PlayMusicByIndex(1);
-        //TODO: audioSystem.PlayVoiceLineByIndex();
-        Invoke("phase2Start", 5f); //TODO: change to voice line length
+        audioSystem.PlaySFXByName("door");
+        audioSystem.StopMusicByIndex(0);
+        audioSystem.PlayMusicByIndex(1);
+        audioSystem.PlayVoiceLineByIndex(1);
+        Invoke("phase2Start", 18f); //TODO: change to voice line length
     }
 
     void phase2Start()
     {
         part1.SetActive(false);
         frontdoor.GetComponent<Animator>().SetTrigger("frontdoorTrigger");
+        audioSystem.PlaySFXByName("door");
         currentPhase = Phase.phase2;
     }
 

@@ -8,17 +8,18 @@ public class ElevatorScript : MonoBehaviour
     public float speed;
     public float waitTime;
     private bool activated,moved, ready;
+    private AudioSource src;
 
     private void Start()
     {
         ready = false;
         activated = false;
         moved = false;
+        src = gameObject.GetComponent<AudioSource>();
     }
 
     private void Update()
     {
-
         if (ready && activated && !moved)
         {
             Move();
@@ -30,6 +31,11 @@ public class ElevatorScript : MonoBehaviour
         if(transform.position == destination.position)
         {
             moved = true;
+        }
+
+        if(!src.isPlaying)
+        {
+            src.Play();
         }
     }
 
