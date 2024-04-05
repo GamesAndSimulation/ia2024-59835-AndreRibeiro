@@ -16,6 +16,9 @@ public class LevelScript : MonoBehaviour
     public GameObject backdoor;
     public GameObject frontdoor;
 
+    [Header("Phase2")]
+    public GameObject part2;
+
 
     public enum Phase
     {
@@ -45,6 +48,7 @@ public class LevelScript : MonoBehaviour
     {
         currentPhase = Phase.phase1;
         part1.SetActive(true);
+        part2.SetActive(false);
         audioSystem.PlayMusicByIndex(0);
         Invoke("playFirstVoiceLine", 5f);
     }
@@ -70,6 +74,7 @@ public class LevelScript : MonoBehaviour
     void phase2Start()
     {
         part1.SetActive(false);
+        part2.SetActive(true);
         frontdoor.GetComponent<Animator>().SetTrigger("frontdoorTrigger");
         audioSystem.PlaySFXByName("door");
     }
