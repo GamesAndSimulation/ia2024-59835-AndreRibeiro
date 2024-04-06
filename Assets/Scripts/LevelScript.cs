@@ -9,7 +9,7 @@ public class LevelScript : MonoBehaviour
     [Header("General")]
     public AudioSystem audioSystem;
     public GameObject player;
-    private Phase currentPhase;
+    public Phase currentPhase;
 
     [Header("Phase1")]
     public GameObject part1;
