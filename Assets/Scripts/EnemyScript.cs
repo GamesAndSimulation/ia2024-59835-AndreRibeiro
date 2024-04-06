@@ -99,6 +99,7 @@ public class EnemyScript : MonoBehaviour
         PlayExplosionSound(explosionSource);
         Destroy(explosionInstance, explosionSound.length + 2f);
         Destroy(gameObject);
+        playerTransform.GetComponent<PlayerVariables>().AddScore(100);
     }
 
     void Patrol()

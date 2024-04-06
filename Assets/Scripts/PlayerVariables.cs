@@ -9,11 +9,13 @@ public class PlayerVariables : MonoBehaviour
     public int shield;
     public int speed;
     public int ammo;
+    public int score;
 
     public TextMeshProUGUI healthText;
     public TextMeshProUGUI shieldText;
     public TextMeshProUGUI speedText;
     public TextMeshProUGUI ammoText;
+    public TextMeshProUGUI scoreText;
 
 
     private void Update()
@@ -33,6 +35,7 @@ public class PlayerVariables : MonoBehaviour
         shieldText.text = "Shield: " + shield;
         speedText.text = "Speed: " + speed;
         ammoText.text = "Ammo: " + ammo;
+        scoreText.text = "Score: " + score;
     }
 
     private void Die()
@@ -69,6 +72,11 @@ public class PlayerVariables : MonoBehaviour
     public void AddShield(int shield)
     {
         this.shield += shield;
+    }
+
+    public void AddScore(int score)
+    {
+        this.score += score;
     }
 
 }
