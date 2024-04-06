@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 //This script is used for the levels cutscenes, events, dialogs and animations
 public class LevelScript : MonoBehaviour
@@ -10,13 +11,16 @@ public class LevelScript : MonoBehaviour
     [Header("General")]
     public AudioSystem audioSystem;
     public GameObject player;
-    public GameObject camera;
     public Phase currentPhase;
     public Canvas canvas;
     public GameObject title;
     public CanvasGroup fadeGroup;
     public CanvasGroup hud;
+    public GameObject logo;
+    public GameObject gameOverImage;
+
     private bool fadeIn;
+
 
     [Header("Phase1")]
     public GameObject part1;
@@ -50,7 +54,7 @@ public class LevelScript : MonoBehaviour
         phase2,
         phase3
     }
-
+    /*
     void checkForShortcut()
     {
         if(Input.GetKeyDown(KeyCode.Alpha1))
@@ -84,7 +88,7 @@ public class LevelScript : MonoBehaviour
             player.transform.position = greenSphere.transform.position;
         }
     }
-
+    */
     void phase2Shortcut(Transform pos)
     {
         part1.SetActive(false);
@@ -100,6 +104,8 @@ public class LevelScript : MonoBehaviour
     {
         truthTriggered = false;
         title.SetActive(false);
+        logo.SetActive(false);
+        gameOverImage.SetActive(false);
         fadeIn = true;
         phase1Start();
     }
@@ -108,7 +114,7 @@ public class LevelScript : MonoBehaviour
     {
         if(fadeIn)
             FadeIn();
-        checkForShortcut();
+        //checkForShortcut();
     }
 
     void FadeIn()
@@ -161,11 +167,22 @@ public class LevelScript : MonoBehaviour
         audioSystem.StopMusicByIndex(0);
         audioSystem.PlayMusicByIndex(1);
         audioSystem.PlayVoiceLineByIndex(1);
+        Invoke("TitleCard", 15f);
         Invoke("phase2Start", 18f);
+    }
+
+    void TitleCard()
+    {
+        fadeGroup.alpha = 1;
+        hud.alpha = 0;
+        logo.SetActive(true);
     }
 
     void phase2Start()
     {
+        fadeGroup.alpha = 0;
+        hud.alpha = 1;
+        logo.SetActive(false);
         part1.SetActive(false);
         part2.SetActive(true);
         frontdoor.GetComponent<Animator>().SetTrigger("frontdoorTrigger");
@@ -211,6 +228,7 @@ public class LevelScript : MonoBehaviour
 
     public void backToHQ()
     {
+        secretPlace.SetActive(false);
         player.transform.position = greenSphere.transform.position;
     }
 
@@ -333,4 +351,19 @@ public class LevelScript : MonoBehaviour
         Application.Quit();
     }
 
+    public void GameOver()
+    {
+        audioSystem.StopAllMusic();
+        player.SetActive(false);
+        fadeGroup.alpha = 1;
+        hud.alpha = 0;
+        gameOverImage.SetActive(true);
+        Invoke("Restart", 5f);
+    }
+
+    public void Restart()
+    {
+        Scene currentScene = UnityEngine.SceneManagement.SceneManager.GetActiveScene();
+        UnityEngine.SceneManagement.SceneManager.LoadScene(currentScene.name);
+    }
 }

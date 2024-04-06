@@ -515,6 +515,7 @@ MonoBehaviour:
   magazineSize: 50
   bulletsPerTap: 1
   allowButtonHold: 1
+  bulletsLeft: 0
   laser: {fileID: 3864823077180920665}
   fpsCam: {fileID: 7489856032343483774}
   attackPoint: {fileID: 4405380959525245250}

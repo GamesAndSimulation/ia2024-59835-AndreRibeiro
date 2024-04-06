@@ -148,7 +148,13 @@ public class AudioSystem : MonoBehaviour
         voiceLines[index].source.Play();
     }
 
-    
+    public void StopAllMusic()
+    {
+        for (int i = 0; i < music.Length; i++)
+        {
+            music[i].source.Stop();
+        }
+    }
 }
 
 

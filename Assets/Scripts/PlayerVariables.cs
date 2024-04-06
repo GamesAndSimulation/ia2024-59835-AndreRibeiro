@@ -17,13 +17,15 @@ public class PlayerVariables : MonoBehaviour
     public TextMeshProUGUI ammoText;
     public TextMeshProUGUI scoreText;
 
+    public GameObject cameraPP;
+    public LevelScript levelScript;
 
     private void Update()
     {
         speed = (int)gameObject.GetComponent<Rigidbody>().velocity.magnitude;
         ammo = GameObject.Find("SciFiGunLightRad").GetComponent<GunSystem>().bulletsLeft;
         UpdateUI();
-        if (health <= 0)
+        if (health <= 0 || gameObject.transform.position.y < -50)
         {
             Die();
         }
@@ -40,9 +42,7 @@ public class PlayerVariables : MonoBehaviour
 
     private void Die()
     {
-        Scene currentScene = SceneManager.GetActiveScene();
-
-        SceneManager.LoadScene(currentScene.name);
+        levelScript.GameOver();
     }
 
     public void TakeDamage(int damage)
@@ -62,6 +62,7 @@ public class PlayerVariables : MonoBehaviour
             health -= damage;
         }
 
+        cameraPP.GetComponent<FirstPersonScript>().TakeDamage();
     }
 
     public void Heal(int heal)
