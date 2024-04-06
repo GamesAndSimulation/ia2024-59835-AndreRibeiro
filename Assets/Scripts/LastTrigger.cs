@@ -9,7 +9,7 @@ public class LastTrigger : MonoBehaviour
         if (other.CompareTag("Player"))
         {
             LevelScript levelScript = GameObject.Find("EventSystem").GetComponent<LevelScript>();
-            levelScript.triggerLibEnd();
+            levelScript.triggerFinalLine();
         }
     }
 }
