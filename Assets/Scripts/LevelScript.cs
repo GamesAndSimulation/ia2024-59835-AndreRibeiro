@@ -10,7 +10,13 @@ public class LevelScript : MonoBehaviour
     [Header("General")]
     public AudioSystem audioSystem;
     public GameObject player;
+    public GameObject camera;
     public Phase currentPhase;
+    public Canvas canvas;
+    public GameObject title;
+    public CanvasGroup fadeGroup;
+    public CanvasGroup hud;
+    private bool fadeIn;
 
     [Header("Phase1")]
     public GameObject part1;
@@ -74,6 +80,7 @@ public class LevelScript : MonoBehaviour
         if(Input.GetKeyDown(KeyCode.Alpha7))
         {
             player.GetComponent<PlayerVariables>().score = 0;
+            secretPlace.SetActive(true);
             player.transform.position = greenSphere.transform.position;
         }
     }
@@ -92,12 +99,40 @@ public class LevelScript : MonoBehaviour
     void Start()
     {
         truthTriggered = false;
+        title.SetActive(false);
+        fadeIn = true;
         phase1Start();
     }
 
     void Update()
     {
+        if(fadeIn)
+            FadeIn();
         checkForShortcut();
+    }
+
+    void FadeIn()
+    {
+        if(fadeGroup.alpha > 0)
+        {
+            fadeGroup.alpha -= Time.deltaTime;
+        }
+        else
+        {
+            fadeGroup.alpha = 0;
+
+            if (hud.alpha < 1)
+            {
+                hud.alpha += Time.deltaTime;
+            }
+            else
+            {
+                hud.alpha = 1;
+                fadeIn = false;
+            }
+        }
+
+       
     }
 
     void phase1Start()
@@ -195,6 +230,7 @@ public class LevelScript : MonoBehaviour
     public void phase2End()
     {
         audioSystem.StopMusicByIndex(1);
+        audioSystem.StopMusicByIndex(2);
         part2.SetActive(false);
     }
 
@@ -261,12 +297,40 @@ public class LevelScript : MonoBehaviour
 
     public void Ending1()
     {
-        throw new NotImplementedException();
+        player.SetActive(false);
+        fadeGroup.alpha = 1;
+        hud.alpha = 0;
+        title.SetActive(true);
+        title.GetComponent<TextMeshProUGUI>().text = "Level Complete.";
+        Invoke("TitlePopOut", 0.5f);
+        Invoke("Quit", 5f);
     }
 
     public void Ending2()
     {
-        throw new NotImplementedException();
+        player.SetActive(false);
+        fadeGroup.alpha = 1;
+        hud.alpha = 0;
+        title.SetActive(true);
+        title.GetComponent<TextMeshProUGUI>().text = "To Be Continued...";
+        Invoke("Quit", 5f);
+    }
+
+    void TitlePopOut()
+    {
+       title.SetActive(false);
+       Invoke("TitlePopIn", 0.5f);
+    }
+
+    void TitlePopIn()
+    {
+        title.SetActive(true);
+        Invoke("TitlePopOut", 0.5f);
+    }
+
+    private void Quit()
+    {
+        Application.Quit();
     }
 
 }
