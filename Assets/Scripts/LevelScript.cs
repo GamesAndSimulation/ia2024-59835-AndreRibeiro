@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -24,11 +25,17 @@ public class LevelScript : MonoBehaviour
     public Collider forkCollider;
     public Collider libEntrance;
     public Collider libEnd;
+    public Collider greenSphere;
 
     [Header("Phase3")]
     public GameObject part3;
     public GameObject phase3Pos;
+    public GameObject finalCollider;
     public TextMeshPro[] finalTexts;
+
+    [Header("SecretPlace")]
+    public GameObject secretPlace;
+    public GameObject secretSpawn;
     public bool truthTriggered;
 
     public enum Phase
@@ -64,6 +71,11 @@ public class LevelScript : MonoBehaviour
         {
            phase3Start();
         }
+        if(Input.GetKeyDown(KeyCode.Alpha7))
+        {
+            player.GetComponent<PlayerVariables>().score = 0;
+            player.transform.position = greenSphere.transform.position;
+        }
     }
 
     void phase2Shortcut(Transform pos)
@@ -93,6 +105,8 @@ public class LevelScript : MonoBehaviour
         currentPhase = Phase.phase1;
         part1.SetActive(true);
         part2.SetActive(false);
+        part3.SetActive(false);
+        secretPlace.SetActive(false);
         audioSystem.PlayMusicByIndex(0);
         Invoke("playFirstVoiceLine", 5f);
     }
@@ -123,22 +137,59 @@ public class LevelScript : MonoBehaviour
         audioSystem.PlaySFXByName("door");
     }
 
-    void triggerForkVoiceline()
+    public void triggerForkVoiceline()
     {
         forkCollider.enabled = false;
-        //TODO: audioSystem.PlayVoiceLineByIndex(2); add voice line
+        audioSystem.PlayVoiceLineByIndex(2);
     }
 
-    void triggerLibEntrance()
+    public void triggerLibEntrance()
     {
         libEntrance.enabled = false;
-        //TODO: audioSystem.PlayVoiceLineByIndex(3); add voice line
+        audioSystem.PlayVoiceLineByIndex(3);
     }
 
-    void triggerLibEnd()
+    public void triggerLibEnd()
     {
         libEnd.enabled = false;
-        //TODO: audioSystem.PlayVoiceLineByIndex(4); add voice line
+        audioSystem.PlayVoiceLineByIndex(4);
+    }
+
+    public void triggerGreenSphere()
+    {
+        if(player.GetComponent<PlayerVariables>().score == 0)
+        {
+            secretPlace.SetActive(true);
+            player.transform.position = secretSpawn.transform.position;
+            audioSystem.PlayMusicByIndex(2);
+            audioSystem.StopMusicByIndex(1);
+        }
+
+        greenSphere.enabled = false;
+    }
+
+    public void triggerTruth()
+    {
+        truthTriggered = true;
+        audioSystem.PlayVoiceLineByIndex(5);
+    }
+
+    public void backToHQ()
+    {
+        player.transform.position = greenSphere.transform.position;
+    }
+
+    public void triggerHQ()
+    {
+        hqEntrance.enabled = false;
+        if(truthTriggered)
+        {
+            audioSystem.PlayVoiceLineByIndex(7);
+        }
+        else
+        {
+            audioSystem.PlayVoiceLineByIndex(6);
+        }
     }
 
     public void phase2End()
@@ -202,6 +253,20 @@ public class LevelScript : MonoBehaviour
             finalTexts[5].text = "Or is a good soldier someone who fights for what they believe in?";
         }
     }
+    public void triggerFinalLine()
+    {
+        finalCollider.SetActive(false);
+        audioSystem.PlayVoiceLineByIndex(8);
+    }
 
+    public void Ending1()
+    {
+        throw new NotImplementedException();
+    }
+
+    public void Ending2()
+    {
+        throw new NotImplementedException();
+    }
 
 }
